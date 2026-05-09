@@ -1,6 +1,6 @@
 {
   "name": "nuxt-ssr-devtools",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Chrome DevTools companion for inspecting Nuxt SSR fetch calls",
   "license": "MIT",
   "keywords": [
