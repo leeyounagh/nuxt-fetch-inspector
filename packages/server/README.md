@@ -67,18 +67,18 @@ The module automatically:
 
 ### Usage notes
 
-- **Initial page load** is captured automatically — the marker carries the
-  initial render's session id, so SSR fetches that fire during the first render
-  show up in the panel as soon as you open it.
-- **Subsequent server-side requests** (server routes, route handlers,
-  `$fetch` from a server action, etc.) execute in *new* request contexts with
-  their own sessions. The panel does **not auto-refresh** for these — click the
-  **Refresh** button after triggering a server-side action to merge the new
-  fetches in.
+- **Initial page load (SSR)** — `useFetch` / `$fetch` / raw `fetch` running on
+  the server are captured into a session keyed on the `H3Event`.
+- **Client-side navigation (NuxtLink)** — since v0.2.0, `window.fetch` on the
+  browser is also patched. Each route change starts a new client session, the
+  DOM marker is updated, and captured fetches are POSTed to the server's
+  registry in 200ms-debounced batches. Result: the panel auto-updates as you
+  click around without needing hard refresh.
 - The panel auto-refreshes on full page navigation
-  (`chrome.devtools.network.onNavigated`). Soft client-side navigations inside
-  the same document also need a manual Refresh.
-- Live polling / SSE push is planned; for now Refresh is the contract.
+  (`chrome.devtools.network.onNavigated`) and polls every 2s. Manual **Refresh**
+  is still useful for edge cases (e.g. server actions completing after the
+  poll window).
+- Live SSE push is planned.
 
 ### Configuration
 
@@ -91,19 +91,34 @@ export default defineNuxtConfig({
     maxSessions: 200,             // recent sessions kept in memory
     redactHeaders: ['authorization', 'cookie', 'set-cookie', 'x-api-key'],
     apiPath: '/api/ssr-devtools', // route the extension reads from
+    ignorePatterns: [             // url substrings to skip recording
+      '/__nuxt_vite_node__/',     // (defaults filter Nuxt dev-mode internals
+      '/__nuxt_devtools__/',      //  so the panel only shows real API calls;
+      '/_nuxt/',                  //  pass [] to disable filtering)
+      '/_ipx/',
+    ],
   },
 })
 ```
 
-### How it works (one paragraph)
+### How it works
 
-A Nitro plugin replaces `globalThis.fetch` with a wrapper that records every
-call into a per-request session. Sessions are keyed on the `H3Event` returned
-by `useEvent()` (from `nitropack/runtime`) — the same reference is shared
-across all code paths in a single request. The Nitro `render:html` hook
+**Server side** — A Nitro plugin replaces `globalThis.fetch` with a wrapper
+that records every call into a per-request session, keyed on the `H3Event`
+returned by `useEvent()` (from `nitropack/runtime`). The `render:html` hook
 appends a `<script data-ssr-devtools>` marker carrying the request id; the
-API route returns the session for that id. The Chrome extension reads the
-marker and hits the API.
+API route returns the session for that id.
+
+**Client side (v0.2.0+)** — A Nuxt plugin (`mode: 'client'`) patches
+`window.fetch` on the browser. On each Vue Router `beforeEach`, the plugin
+flushes any buffered captures, generates a new client session id, updates
+the DOM marker, and POSTs `{ sessionId, init: true }` to the API. Captured
+fetches are POSTed to the same API in 200ms-debounced batches and stored
+alongside SSR sessions in the same in-memory registry.
+
+The Chrome extension panel reads the marker on every poll and merges the
+marker's session with other recently-started sessions, so SSR and client
+captures appear together on one timeline.
 
 ### License
 
@@ -164,16 +179,16 @@ export default defineNuxtConfig({
 
 ### 사용 시 주의사항
 
-- **첫 페이지 로드** 의 SSR fetch 는 자동으로 잡힙니다 — 마커가 초기 렌더 세션
-  ID 를 들고 있어서 패널 열면 바로 보입니다.
-- **그 다음 서버사이드 요청** (server route, route handler, server action 등)
-  은 각각 **새 request context** + **새 세션** 으로 실행됩니다. 패널은 이런
-  요청에 대해 **자동 갱신되지 않으므로**, 트리거 후 패널의 **Refresh 버튼**
-  을 눌러야 새 fetch 가 표시됩니다.
-- 풀 페이지 네비게이션 시에는 자동 갱신됩니다
-  (`chrome.devtools.network.onNavigated`). soft client-side 네비게이션은
-  수동 Refresh 필요.
-- 실시간 폴링 / SSE 푸시는 로드맵에 있습니다. 당분간은 Refresh 가 약속.
+- **첫 페이지 로드 (SSR)** — 서버에서 실행되는 `useFetch` / `$fetch` /
+  raw `fetch` 는 `H3Event` 를 키로 하는 세션에 자동으로 잡힙니다.
+- **클라이언트 사이드 네비게이션 (NuxtLink)** — v0.2.0 부터 브라우저의
+  `window.fetch` 도 패치됩니다. 매 라우트 전환 시 새 client 세션이 생성되고,
+  DOM 마커가 업데이트되며, 캡처된 fetch 들은 200ms 디바운스 배치로 서버
+  registry 에 POST 됩니다. 결과: 페이지 클릭만 해도 panel 이 자동 갱신.
+- 패널은 풀 페이지 네비게이션 (`chrome.devtools.network.onNavigated`) 에
+  자동 갱신되고 2초마다 폴링합니다. 엣지 케이스 (서버 액션이 폴링 직후
+  완료 등) 에선 수동 **Refresh** 버튼 사용.
+- 실시간 SSE 푸시는 로드맵.
 
 ### 설정 옵션
 
@@ -186,19 +201,32 @@ export default defineNuxtConfig({
     maxSessions: 200,             // 메모리에 보관할 최근 세션 수
     redactHeaders: ['authorization', 'cookie', 'set-cookie', 'x-api-key'],
     apiPath: '/api/ssr-devtools', // 익스텐션이 호출할 route
+    ignorePatterns: [             // url 부분일치로 제외 (Nuxt dev 내부 요청)
+      '/__nuxt_vite_node__/',     // (기본값은 vite-node, devtools, _nuxt assets
+      '/__nuxt_devtools__/',      //  를 거름. 비활성화하려면 [] 전달)
+      '/_nuxt/',
+      '/_ipx/',
+    ],
   },
 })
 ```
 
-### 동작 원리 (한 문단)
+### 동작 원리
 
-Nitro 플러그인이 `globalThis.fetch` 를 우리 wrapper로 갈아치워서 모든 호출을
+**서버 사이드** — Nitro 플러그인이 `globalThis.fetch` 를 wrapper 로 갈아치워
 요청별 세션에 기록합니다. 세션 키는 `nitropack/runtime` 의 `useEvent()` 가
-반환하는 `H3Event` — 한 요청 내 모든 코드 경로에서 같은 reference 라서
-useFetch / $fetch / raw fetch 가 같은 세션에 모입니다. Nitro 의 `render:html`
-훅이 request id 가 박힌 `<script data-ssr-devtools>` 를 SSR HTML 에 주입하고,
-API route 는 그 id 로 세션을 돌려줍니다. Chrome 익스텐션이 마커에서 id 읽어
-API 를 호출하는 구조.
+반환하는 `H3Event` — 한 요청 내 모든 코드 경로에서 같은 reference. Nitro 의
+`render:html` 훅이 request id 가 박힌 `<script data-ssr-devtools>` 를 SSR
+HTML 에 주입하고, API route 는 그 id 로 세션을 돌려줍니다.
+
+**클라이언트 사이드 (v0.2.0+)** — `mode: 'client'` 로 등록된 Nuxt 플러그인이
+브라우저의 `window.fetch` 를 패치합니다. Vue Router `beforeEach` 마다 버퍼된
+캡처를 flush, 새 client 세션 ID 생성, DOM 마커 갱신, 서버에 init POST.
+캡처된 fetch 들은 200ms 디바운스 배치로 서버 API 에 POST 되어 SSR 세션과
+동일한 in-memory registry 에 저장됩니다.
+
+Chrome 익스텐션은 마커에서 id 읽어 해당 세션 + 최근 시작된 다른 세션들을
+머지해서 보여주므로, SSR 캡처와 client 캡처가 한 타임라인에 함께 표시됩니다.
 
 ### 라이선스
 

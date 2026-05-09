@@ -90,7 +90,19 @@ globalThis.fetch = async (input, init) => {
 Bodies are streams (read-once), so we use `response.clone()` and read up to
 the configured size limit (100 KB default), truncating beyond that.
 
-### 2. Group fetches by request — `useEvent()` + WeakMap
+### 2. Capture client-side fetches too (v0.2.0+)
+
+Nuxt's SPA routing (NuxtLink) doesn't hit the server — routing happens entirely
+in the browser. SSR-only capture would miss every fetch made after the initial
+page load.
+
+A Nuxt plugin registered with `mode: 'client'` patches `window.fetch` in the
+browser. On each Vue Router `beforeEach`, the plugin generates a new client
+session id and updates the DOM marker. Captured fetches are POSTed to
+`/api/ssr-devtools` in 200ms-debounced batches and stored in the same in-memory
+registry as SSR sessions — the panel sees one unified timeline.
+
+### 3. Group fetches by request — `useEvent()` + WeakMap
 
 When many fetches happen, we need to bucket them by request. In Nuxt/Nitro,
 **`useEvent()` from `nitropack/runtime` returns the current request's
@@ -114,7 +126,7 @@ function getCurrentSession() {
 The module enables `nitro.experimental.asyncContext: true` automatically so
 this works.
 
-### 3. Ship to the browser — `<script>` marker + API route
+### 4. Ship to the browser — `<script>` marker + API route
 
 Two pieces bridge server data to the browser:
 
@@ -125,7 +137,7 @@ Two pieces bridge server data to the browser:
 
 **`/api/ssr-devtools` route handler** — pulls the session for that requestId from the in-memory registry and returns it as JSON.
 
-### 4. Chrome DevTools extension
+### 5. Chrome DevTools extension
 
 MV3 extension with no `host_permissions` needed (uses
 `chrome.devtools.inspectedWindow.eval` to fetch in the page context):
@@ -187,17 +199,17 @@ Load unpacked from source:
 
 ## Usage notes
 
-- **Initial page load** is captured automatically — the marker carries the
-  initial render's session id, so SSR fetches that fire during the first render
-  show up in the panel as soon as you open it.
-- **Subsequent server-side requests** (server routes, route handlers, server
-  actions, etc.) execute in *new* request contexts with their own sessions.
-  The panel does **not auto-refresh** for these — click **Refresh** after
-  triggering a server-side action to merge the new fetches in.
+- **Initial page load (SSR)** — `useFetch` / `$fetch` / raw `fetch` running on
+  the server are captured into a session keyed on the `H3Event`.
+- **Client-side navigation (NuxtLink)** — since v0.2.0, `window.fetch` on the
+  browser is also patched. Each route change starts a new client session, the
+  DOM marker is updated, and captured fetches are POSTed to the server in
+  200ms-debounced batches. Panel auto-updates as you click around.
 - The panel auto-refreshes on full page navigation
-  (`chrome.devtools.network.onNavigated`). Soft client-side navigations need a
-  manual Refresh.
-- Live polling / SSE push is planned; for now Refresh is the contract.
+  (`chrome.devtools.network.onNavigated`) and polls every 2s. Manual **Refresh**
+  is still useful for edge cases (e.g. server actions completing after the
+  poll window).
+- Live SSE push is planned.
 
 ## Configuration
 
@@ -210,6 +222,12 @@ export default defineNuxtConfig({
     maxSessions: 200,             // recent sessions kept in memory
     redactHeaders: ['authorization', 'cookie', 'set-cookie', 'x-api-key'],
     apiPath: '/api/ssr-devtools', // route the extension reads from
+    ignorePatterns: [             // url substrings to skip (Nuxt dev internals)
+      '/__nuxt_vite_node__/',
+      '/__nuxt_devtools__/',
+      '/_nuxt/',
+      '/_ipx/',
+    ],
   },
 })
 ```

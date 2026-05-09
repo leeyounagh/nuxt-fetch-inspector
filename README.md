@@ -83,7 +83,13 @@ globalThis.fetch = async (input, init) => {
 
 Body 는 stream 이라 한 번만 읽을 수 있어서 `response.clone()` 으로 복제 후 size limit (기본 100KB) 안에서 읽고 잘라냅니다.
 
-### 2. 같은 요청의 fetch 끼리 묶기 — `useEvent()` + WeakMap
+### 2. 클라이언트 사이드 fetch 도 가로채기 (v0.2.0+)
+
+Nuxt 의 SPA 라우팅 (NuxtLink) 은 서버 호출 없이 브라우저 안에서만 라우팅이 끝납니다. 그래서 SSR 캡처만으로는 페이지 전환 후의 fetch 를 볼 수 없습니다.
+
+`mode: 'client'` 로 등록된 Nuxt 플러그인이 브라우저의 `window.fetch` 도 패치하고, Vue Router `beforeEach` 훅에서 라우트 전환마다 새 client 세션 ID 를 발급해 DOM 마커를 갱신합니다. 캡처된 fetch 들은 200ms 디바운스 배치로 `POST /api/ssr-devtools` 에 전송되어 SSR 세션과 동일한 in-memory registry 에 저장됩니다 — panel 입장에선 둘이 구분 없이 한 타임라인.
+
+### 3. 같은 요청의 fetch 끼리 묶기 — `useEvent()` + WeakMap
 
 여러 fetch 가 일어나면 어느 요청에 속한 건지 묶어야 합니다. Nuxt/Nitro 환경에서는 **`nitropack/runtime` 의 `useEvent()` 가 현재 요청의 `H3Event` reference 를 리턴**합니다. 한 요청 내 모든 코드 경로에서 같은 reference 라서 `WeakMap<H3Event, Session>` 으로 깔끔하게 키잉할 수 있습니다.
 
@@ -103,7 +109,7 @@ function getCurrentSession() {
 
 이 작동을 위해 모듈이 `nitro.experimental.asyncContext: true` 를 자동으로 활성화합니다.
 
-### 3. 브라우저로 데이터 전달 — `<script>` 마커 + API route
+### 4. 브라우저로 데이터 전달 — `<script>` 마커 + API route
 
 서버에서 모은 데이터를 브라우저로 전달하기 위해 두 부품이 추가됩니다.
 
@@ -114,7 +120,7 @@ function getCurrentSession() {
 
 **`/api/ssr-devtools` route handler**: requestId 로 메모리 registry 에서 세션을 꺼내 JSON 으로 응답합니다.
 
-### 4. Chrome DevTools 익스텐션
+### 5. Chrome DevTools 익스텐션
 
 MV3 익스텐션이고 별도 host_permissions 가 필요 없습니다 (`chrome.devtools.inspectedWindow.eval` 로 페이지 컨텍스트에서 직접 fetch).
 
@@ -174,10 +180,10 @@ export default defineNuxtConfig({
 
 ## 사용 시 주의사항
 
-- **첫 페이지 로드** 의 SSR fetch 는 자동으로 잡힙니다 — 마커가 초기 렌더 세션 ID 를 들고 있어서 패널 열면 바로 보입니다.
-- **그 다음 서버사이드 요청** (server route, route handler, server action 등) 은 각각 **새 request context** + **새 세션** 으로 실행됩니다. 패널은 이런 요청에 대해 **자동 갱신되지 않으므로**, 트리거 후 패널의 **Refresh 버튼** 을 눌러야 새 fetch 가 표시됩니다.
-- 풀 페이지 네비게이션 시에는 자동 갱신됩니다 (`chrome.devtools.network.onNavigated`). soft client-side 네비게이션은 수동 Refresh 필요.
-- 실시간 폴링 / SSE 푸시는 로드맵에 있습니다. 당분간은 Refresh 가 약속.
+- **첫 페이지 로드 (SSR)** — 서버에서 실행되는 `useFetch` / `$fetch` / raw `fetch` 가 H3Event 키 세션에 자동으로 잡힙니다.
+- **클라이언트 사이드 네비게이션 (NuxtLink)** — v0.2.0 부터 브라우저의 `window.fetch` 도 패치되어, NuxtLink 클릭만으로도 panel 이 자동 갱신됩니다. 매 라우트 전환 시 새 client 세션 생성 → DOM 마커 갱신 → 캡처된 fetch 들이 200ms 디바운스로 서버 registry 에 POST.
+- 풀 페이지 네비게이션 시에는 자동 갱신 (`chrome.devtools.network.onNavigated`) + 2초 폴링. 엣지 케이스 (서버 액션이 폴링 직후 완료 등) 에선 **Refresh 버튼**.
+- 실시간 SSE 푸시는 로드맵.
 
 ## 설정 옵션
 
@@ -190,6 +196,12 @@ export default defineNuxtConfig({
     maxSessions: 200,             // 메모리에 보관할 최근 세션 수
     redactHeaders: ['authorization', 'cookie', 'set-cookie', 'x-api-key'],
     apiPath: '/api/ssr-devtools', // 익스텐션이 호출할 route
+    ignorePatterns: [             // url 부분일치 — Nuxt dev 내부 요청 필터
+      '/__nuxt_vite_node__/',
+      '/__nuxt_devtools__/',
+      '/_nuxt/',
+      '/_ipx/',
+    ],
   },
 })
 ```
