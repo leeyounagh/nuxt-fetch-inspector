@@ -17,6 +17,12 @@ export default defineNuxtModule<ModuleOptions>({
     maxSessions: 200,
     redactHeaders: ['authorization', 'cookie', 'set-cookie', 'x-api-key'],
     apiPath: '/api/ssr-devtools',
+    ignorePatterns: [
+      '/__nuxt_vite_node__/',
+      '/__nuxt_devtools__/',
+      '/_nuxt/',
+      '/_ipx/',
+    ],
   },
   setup(options, nuxt) {
     if (!options.enabled) return

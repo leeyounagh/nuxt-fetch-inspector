@@ -207,6 +207,11 @@ export function patchFetch(): void {
     const method = (
       init?.method ?? (input instanceof Request ? input.method : 'GET')
     ).toUpperCase()
+    // Skip dev-mode noise (Nuxt internal vite-node loading, devtools assets, etc.)
+    if (config.ignorePatterns.some(p => url.includes(p))) {
+      return original(input as RequestInfo | URL, init)
+    }
+
     const reqHeadersSource
       = (init?.headers as HeadersInit | undefined)
         ?? (input instanceof Request ? input.headers : undefined)

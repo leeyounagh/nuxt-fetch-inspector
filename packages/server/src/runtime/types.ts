@@ -33,4 +33,10 @@ export interface NuxtSsrDevtoolsConfig {
   maxSessions?: number
   redactHeaders?: string[]
   apiPath?: string
+  /**
+   * URL substrings to skip recording. Default filters out Nuxt dev-mode
+   * internals (vite-node module loading, devtools assets) so the panel only
+   * shows real API calls. Pass `[]` to disable filtering entirely.
+   */
+  ignorePatterns?: string[]
 }
