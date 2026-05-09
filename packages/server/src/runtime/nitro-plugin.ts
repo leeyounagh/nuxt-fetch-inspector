@@ -6,7 +6,7 @@ import type { NuxtSsrDevtoolsConfig } from './types'
 
 export default defineNitroPlugin((nitroApp) => {
   const state = getGlobalState()
-  const userConfig = (useRuntimeConfig() as { ssrDevtools?: Partial<NuxtSsrDevtoolsConfig> }).ssrDevtools
+  const userConfig = (useRuntimeConfig() as { public?: { ssrDevtools?: Partial<NuxtSsrDevtoolsConfig> } }).public?.ssrDevtools
   if (userConfig) Object.assign(state.config, userConfig)
   if (!state.config.enabled) return
 

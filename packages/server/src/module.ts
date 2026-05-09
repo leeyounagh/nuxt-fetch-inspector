@@ -1,4 +1,4 @@
-import { defineNuxtModule, addServerHandler, addServerPlugin, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, addServerHandler, addServerPlugin, addPlugin, createResolver } from '@nuxt/kit'
 import type { NuxtSsrDevtoolsConfig } from './runtime/types'
 
 export interface ModuleOptions extends NuxtSsrDevtoolsConfig {}
@@ -34,19 +34,25 @@ export default defineNuxtModule<ModuleOptions>({
       nitroConfig.experimental = nitroConfig.experimental ?? {}
       nitroConfig.experimental.asyncContext = true
 
-      // 런타임에서 user config 를 읽을 수 있게 publicRuntimeConfig 에 주입.
-      // (registry 의 default 는 주입된 값으로 덮어써짐)
+      // public runtimeConfig 에 주입 → 서버 / 클라 양쪽에서 읽을 수 있음
       nitroConfig.runtimeConfig = nitroConfig.runtimeConfig ?? {}
-      ;(nitroConfig.runtimeConfig as any).ssrDevtools = options
+      nitroConfig.runtimeConfig.public = nitroConfig.runtimeConfig.public ?? {}
+      ;(nitroConfig.runtimeConfig.public as any).ssrDevtools = options
     })
 
     // 1. Nitro plugin: globalThis.fetch 패치 + render:html 훅 으로 마커 주입
     addServerPlugin(resolver.resolve('./runtime/nitro-plugin'))
 
-    // 2. API route
+    // 2. API route — GET 으로 세션 조회, POST 로 클라이언트 캡처 수집
     addServerHandler({
       route: options.apiPath,
       handler: resolver.resolve('./runtime/server-route'),
+    })
+
+    // 3. Client plugin: window.fetch 패치 + 라우트 전환 시 새 세션
+    addPlugin({
+      src: resolver.resolve('./runtime/client-plugin'),
+      mode: 'client',
     })
   },
 })
