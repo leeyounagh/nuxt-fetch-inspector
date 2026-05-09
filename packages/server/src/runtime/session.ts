@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { useEvent } from 'h3'
+import { useEvent } from 'nitropack/runtime'
 import { getGlobalState, rememberSession } from './registry'
 import type { RequestSession } from './types'
 
