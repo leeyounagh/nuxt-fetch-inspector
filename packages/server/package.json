@@ -3,6 +3,24 @@
   "version": "0.1.0",
   "description": "Chrome DevTools companion for inspecting Nuxt SSR fetch calls",
   "license": "MIT",
+  "keywords": [
+    "nuxt",
+    "nuxt-module",
+    "ssr",
+    "devtools",
+    "fetch",
+    "debugging",
+    "chrome-extension"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leeyounagh/nuxt-fetch-inspector.git",
+    "directory": "packages/server"
+  },
+  "homepage": "https://github.com/leeyounagh/nuxt-fetch-inspector#readme",
+  "bugs": {
+    "url": "https://github.com/leeyounagh/nuxt-fetch-inspector/issues"
+  },
   "type": "module",
   "main": "./dist/module.cjs",
   "module": "./dist/module.mjs",
