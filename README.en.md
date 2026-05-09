@@ -8,6 +8,8 @@
 [![npm downloads](https://img.shields.io/npm/dm/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
 [![license](https://img.shields.io/npm/l/nuxt-ssr-devtools.svg?style=flat-square)](./LICENSE)
 
+![Nuxt SSR Fetches DevTools panel preview](./docs/preview.png)
+
 > ⚠️ **You need to install BOTH parts**
 >
 > 1. The **npm package** in your Nuxt app + register it in `nuxt.config.ts` → server collects SSR fetch data.

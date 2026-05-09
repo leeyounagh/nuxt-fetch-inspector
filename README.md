@@ -8,6 +8,8 @@
 [![npm downloads](https://img.shields.io/npm/dm/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
 [![license](https://img.shields.io/npm/l/nuxt-ssr-devtools.svg?style=flat-square)](./LICENSE)
 
+![Nuxt SSR Fetches DevTools 패널 미리보기](./docs/preview.png)
+
 > ⚠️ **두 가지를 모두 설치해야 동작합니다**
 >
 > 1. **npm 패키지** 를 Nuxt 앱에 설치하고 `nuxt.config.ts` 에 module 등록 → 서버에서 SSR fetch 데이터가 수집됩니다.
