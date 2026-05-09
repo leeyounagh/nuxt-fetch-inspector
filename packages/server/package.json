@@ -1,0 +1,39 @@
+{
+  "name": "nuxt-ssr-devtools",
+  "version": "0.1.0",
+  "description": "Chrome DevTools companion for inspecting Nuxt SSR fetch calls",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/module.cjs",
+  "module": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxt-module-build build --stub",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.13.0"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "^0.8.4",
+    "@nuxt/schema": "^3.13.0",
+    "@types/node": "^20.11.0",
+    "nuxt": "^3.13.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "nuxt": "^3.10.0"
+  }
+}

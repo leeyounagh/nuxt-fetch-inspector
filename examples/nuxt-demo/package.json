@@ -1,0 +1,14 @@
+{
+  "name": "nuxt-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "nuxt": "^3.13.0",
+    "nuxt-ssr-devtools": "*"
+  }
+}

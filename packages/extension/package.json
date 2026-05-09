@@ -1,0 +1,6 @@
+{
+  "name": "nuxt-ssr-devtools-extension",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Chrome MV3 DevTools extension for inspecting Nuxt SSR fetch calls"
+}
