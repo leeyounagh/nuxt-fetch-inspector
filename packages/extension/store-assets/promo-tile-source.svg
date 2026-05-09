@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2e2a"/>
+      <stop offset="1" stop-color="#0d1117"/>
+    </linearGradient>
+    <linearGradient id="iconBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#102f2a"/>
+      <stop offset="1" stop-color="#0d1117"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="440" height="280" fill="url(#bg)"/>
+  <!-- Subtle grid lines for "developer" feel -->
+  <line x1="0" y1="240" x2="440" y2="240" stroke="#1f3a36" stroke-width="1"/>
+  <line x1="0" y1="40" x2="440" y2="40" stroke="#1f3a36" stroke-width="1"/>
+
+  <!-- Icon (left, scaled-up 128 design) -->
+  <g transform="translate(28, 60)">
+    <rect width="160" height="160" rx="30" fill="url(#iconBg)"/>
+    <line x1="20" y1="28" x2="125" y2="28" stroke="#1f3a36" stroke-width="1.2" stroke-dasharray="4,4"/>
+    <path d="M132 38 L150 38 L141 24 Z" fill="#00DC82"/>
+    <rect x="20" y="50" width="78" height="18" rx="4" fill="#00DC82"/>
+    <rect x="42" y="80" width="98" height="18" rx="4" fill="#00B975"/>
+    <rect x="65" y="110" width="42" height="18" rx="4" fill="#7AE6B8"/>
+    <path d="M108 138 L128 146 L108 154 Z" fill="#e6edf3"/>
+  </g>
+
+  <!-- Text (right) -->
+  <g transform="translate(208, 0)">
+    <text x="0" y="120" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="26" font-weight="700" fill="#e6edf3">SSR DevTools</text>
+    <text x="0" y="148" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="500" fill="#00DC82">for Nuxt 3</text>
+    <text x="0" y="184" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" fill="#c9d1d9">Inspect SSR fetch calls</text>
+    <text x="0" y="202" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" fill="#c9d1d9">in Chrome DevTools.</text>
+    <text x="0" y="232" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#7d8590">nuxt-ssr-devtools</text>
+  </g>
+</svg>

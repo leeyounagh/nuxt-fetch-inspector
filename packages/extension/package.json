@@ -2,5 +2,11 @@
   "name": "nuxt-ssr-devtools-extension",
   "private": true,
   "version": "0.1.0",
-  "description": "Chrome MV3 DevTools extension for inspecting Nuxt SSR fetch calls"
+  "description": "Chrome MV3 DevTools extension for inspecting Nuxt SSR fetch calls",
+  "scripts": {
+    "build:icons": "node scripts/build-icons.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
 }
