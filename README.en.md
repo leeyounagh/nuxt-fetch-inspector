@@ -6,6 +6,7 @@
 
 [![npm version](https://img.shields.io/npm/v/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
 [![npm downloads](https://img.shields.io/npm/dm/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
+[![Chrome Web Store](https://img.shields.io/badge/chrome-web%20store-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe)
 [![license](https://img.shields.io/npm/l/nuxt-ssr-devtools.svg?style=flat-square)](./LICENSE)
 
 ![Nuxt SSR Fetches DevTools panel preview](./docs/preview.png)
@@ -13,7 +14,7 @@
 > ⚠️ **You need to install BOTH parts**
 >
 > 1. The **npm package** in your Nuxt app + register it in `nuxt.config.ts` → server collects SSR fetch data.
-> 2. The **Chrome extension** loaded unpacked → renders that data in the "Nuxt SSR Fetches" DevTools panel.
+> 2. The **Chrome extension** installed from the [Chrome Web Store](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe) → renders that data in the "Nuxt SSR Fetches" DevTools panel.
 >
 > Package only: data is collected but no UI to view it. Extension only: nothing to read.
 
@@ -189,7 +190,14 @@ The module automatically:
 
 ## Install the extension
 
-Load unpacked from source:
+Pick whichever is easier.
+
+### Option 1: Chrome Web Store (recommended)
+
+1. [**Install from the Chrome Web Store**](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe) → click "Add to Chrome"
+2. Open a Nuxt page → DevTools (F12) → **Nuxt SSR Fetches** tab
+
+### Option 2: Load unpacked from source (for development/customization)
 
 1. Clone this repo or [download as ZIP](https://github.com/leeyounagh/nuxt-fetch-inspector/archive/refs/heads/main.zip)
 2. Open `chrome://extensions`

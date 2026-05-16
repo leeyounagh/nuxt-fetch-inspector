@@ -6,6 +6,7 @@
 
 [![npm version](https://img.shields.io/npm/v/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
 [![npm downloads](https://img.shields.io/npm/dm/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
+[![Chrome Web Store](https://img.shields.io/badge/chrome-web%20store-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe)
 [![license](https://img.shields.io/npm/l/nuxt-ssr-devtools.svg?style=flat-square)](./LICENSE)
 
 ![Nuxt SSR Fetches DevTools 패널 미리보기](./docs/preview.png)
@@ -13,7 +14,7 @@
 > ⚠️ **두 가지를 모두 설치해야 동작합니다**
 >
 > 1. **npm 패키지** 를 Nuxt 앱에 설치하고 `nuxt.config.ts` 에 module 등록 → 서버에서 SSR fetch 데이터가 수집됩니다.
-> 2. **Chrome 익스텐션** 을 소스에서 직접 로드해야 DevTools 의 "Nuxt SSR Fetches" 패널에서 그 데이터를 볼 수 있습니다.
+> 2. **Chrome 익스텐션** 을 [Chrome Web Store](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe) 에서 **꼭** 설치해야 위 스크린샷처럼 DevTools 의 "Nuxt SSR Fetches" 패널에서 그 데이터를 볼 수 있습니다.
 >
 > 패키지만 설치하면 데이터는 모이지만 보여줄 UI 가 없습니다. 익스텐션만 설치하면 읽을 데이터가 없습니다.
 
@@ -170,7 +171,14 @@ export default defineNuxtConfig({
 
 ## 익스텐션 설치
 
-소스에서 직접 로드:
+두 가지 방법 중 편한 쪽을 고르세요.
+
+### 방법 1: Chrome Web Store (권장)
+
+1. [**Chrome Web Store 에서 설치**](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe) → "Chrome 에 추가" 클릭
+2. Nuxt 페이지 열고 DevTools(F12) → **Nuxt SSR Fetches** 탭
+
+### 방법 2: 소스 코드에서 직접 로드 (개발/커스터마이징용)
 
 1. 이 저장소를 clone 하거나 [ZIP 으로 다운로드](https://github.com/leeyounagh/nuxt-fetch-inspector/archive/refs/heads/main.zip) 후 압축 해제
 2. `chrome://extensions` 열기

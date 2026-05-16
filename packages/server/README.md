@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
 [![npm downloads](https://img.shields.io/npm/dm/nuxt-ssr-devtools.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-ssr-devtools)
+[![Chrome Web Store](https://img.shields.io/badge/chrome-web%20store-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe)
 [![license](https://img.shields.io/npm/l/nuxt-ssr-devtools.svg?style=flat-square)](https://github.com/leeyounagh/nuxt-fetch-inspector/blob/main/LICENSE)
 
 > Inspect **Nuxt SSR `fetch()` calls** in Chrome DevTools.
@@ -23,7 +24,7 @@ URLs, headers, status codes, durations, or response bodies.
 This module patches `globalThis.fetch` on the server, captures every SSR fetch
 into an in-memory per-request session keyed on the H3Event, and exposes them
 through a small marker `<script>` and an API route. Pair it with the
-[SSR DevTools Chrome extension](https://github.com/leeyounagh/nuxt-fetch-inspector/tree/main/packages/extension)
+[Nuxt SSR DevTools Chrome extension](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe)
 to view captured fetches in a DevTools panel — like the Network tab, but for SSR.
 
 ### Install
@@ -34,11 +35,12 @@ to view captured fetches in a DevTools panel — like the Network tab, but for S
 npm install nuxt-ssr-devtools
 ```
 
-**2. Chrome extension** — load unpacked from source:
+**2. Chrome extension** — pick one:
 
-Clone [the repo](https://github.com/leeyounagh/nuxt-fetch-inspector), open
-`chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and
-select `packages/extension/`.
+- **Recommended:** [Install from the Chrome Web Store](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe).
+- Or load unpacked from source: clone [the repo](https://github.com/leeyounagh/nuxt-fetch-inspector),
+  open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**,
+  and select `packages/extension/`.
 
 Requirements: **Nuxt 3.10+** with Nitro 2.x.
 
@@ -138,7 +140,7 @@ Nuxt에서 `useFetch` / `$fetch` 는 SSR 시 Node.js 서버 안에서 일어납�
 이 모듈은 서버에서 `globalThis.fetch` 를 가로채 H3Event 를 키로 한 요청별
 세션에 SSR fetch를 모으고, 작은 `<script>` 마커와 API route로 브라우저에
 노출합니다.
-[SSR DevTools Chrome 익스텐션](https://github.com/leeyounagh/nuxt-fetch-inspector/tree/main/packages/extension)
+[Nuxt SSR DevTools Chrome 익스텐션](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe)
 과 함께 쓰면 DevTools 패널에서 SSR fetch 목록을 볼 수 있어요 — Network
 탭처럼 생긴, 그러나 SSR 전용 패널이라고 보시면 됩니다.
 
@@ -150,11 +152,12 @@ Nuxt에서 `useFetch` / `$fetch` 는 SSR 시 Node.js 서버 안에서 일어납�
 npm install nuxt-ssr-devtools
 ```
 
-**2. Chrome 익스텐션** — 소스에서 직접 로드:
+**2. Chrome 익스텐션** — 두 가지 방법 중 선택:
 
-[저장소](https://github.com/leeyounagh/nuxt-fetch-inspector)를 clone 후
-`chrome://extensions` → **개발자 모드** 켜고 → **압축해제된 확장 프로그램을
-로드합니다** → `packages/extension/` 폴더 선택.
+- **권장:** [Chrome Web Store 에서 설치](https://chromewebstore.google.com/detail/nuxt-ssr-devtools/cnjenbfkmledelckedgbookjppiddppe).
+- 또는 소스에서 직접 로드: [저장소](https://github.com/leeyounagh/nuxt-fetch-inspector) clone 후
+  `chrome://extensions` → **개발자 모드** 켜고 → **압축해제된 확장 프로그램을
+  로드합니다** → `packages/extension/` 폴더 선택.
 
 요구사항: **Nuxt 3.10+** + Nitro 2.x.
 
